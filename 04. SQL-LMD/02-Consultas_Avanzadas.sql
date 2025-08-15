@@ -261,13 +261,113 @@ SELECT o.Ciudad,MAX(cuota) AS [Maximo Cuota], MIN (cuota) [MINIMO Cuota], (MAX (
 FROM Representantes AS r
 INNER JOIN Oficinas AS o
 ON r.Num_Empl=o.Jef
-Group by o.Ciudad
-
-
-
+Group by o.Ciudad, r.Nombre
+ORDER BY o.Ciudad;
+go
 
 USE BDEJEMPLO2
 
 SELECT 
 * FROM Pedidos
+
+USE NORTHWND;
+
+
+/* 
+1) Seleccionar el ingreso total por cliente en 1997 y ordenado por el ingreso de forma descendente
+*/
+
+SELECT c.CompanyName AS [Cliente]
+,SUM(od.Quantity * od.UnitPrice * (1 - od.Discount)) AS [Ingreso]
+FROM
+[Order Details] AS od
+	INNER JOIN
+Orders AS o 
+ON o.OrderID = od.OrderID
+	INNER JOIN
+Customers AS c
+ON O.CustomerID = c.CustomerID
+WHERE YEAR (o.OrderDate) = 1997
+GROUP BY c.CompanyName;
+
+SELECT c.CompanyName AS [Cliente]
+,SUM(od.Quantity * od.UnitPrice * (1 - od.Discount)) AS [Ingreso]
+FROM
+[Order Details] AS od
+	INNER JOIN
+Orders AS o 
+ON o.OrderID = od.OrderID
+	INNER JOIN
+Customers AS c
+ON O.CustomerID = c.CustomerID
+WHERE DATEPART (yy, o.OrderDate) = 1997
+GROUP BY c.CompanyName;
+
+SELECT c.CompanyName AS [Cliente]
+,ROUND(SUM(od.Quantity * od.UnitPrice * (1 - od.Discount)),2) AS [Ingreso]
+FROM
+[Order Details] AS od
+	INNER JOIN
+Orders AS o 
+ON o.OrderID = od.OrderID
+	INNER JOIN
+Customers AS c
+ON O.CustomerID = c.CustomerID
+WHERE DATEPART (yy, o.OrderDate) = 1997
+GROUP BY c.CompanyName;
+
+SELECT  TOP 10 c.CompanyName AS [Cliente]
+,ROUND(SUM(od.Quantity * od.UnitPrice * (1 - od.Discount)),2) AS [Ingreso]
+FROM
+[Order Details] AS od
+	INNER JOIN
+Orders AS o 
+ON o.OrderID = od.OrderID
+	INNER JOIN
+Customers AS c
+ON O.CustomerID = c.CustomerID
+WHERE DATEPART (yy, o.OrderDate) = 1997
+GROUP BY c.CompanyName
+ORDER BY [Ingreso] DESC;
+GO
+
+SELECT * FROM [Order Details]
+
+/*
+ 2) SELCCIONAR LOS PRODUCTOS POR CATEGORIA MAS VENDIDOS (UNIDADES),
+	ENVIADOS A ALEMANIA ORDENADOS POR CATEGORIA ASC Y DENTRO DE CATEGORIA 
+	POR UNIDAD DE FORMA DESCENDENTE
+*/
+
+SELECT c.CategoryName AS [Categoria],
+p.ProductName AS [Producto]
+	,SUM (od.Quantity) AS [Unidades]
+FROM [Order Details] AS od
+INNER JOIN
+Orders AS o
+ON o.OrderID = od.OrderID
+INNER JOIN 
+Products AS p
+ON P.ProductID = od.ProductID
+INNER JOIN
+Categories AS c
+ON c.CategoryID = p.CategoryID
+WHERE o.ShipCountry = 'Germany'
+GROUP BY c.CategoryName, p.ProductName
+ORDER BY 1, [Unidades] DESC;
+
+/*
+  3) Seleccionar empleados con mas pedidos realizados po año,
+  ordenados por año y por numero de pedidos
+*/
+
+SELECT CONCAT(e.FirstName, ' ', e.LastName) AS [Empleado],
+DATEPART (year, o.OrderDate) AS [Año],
+COUNT(*) AS [Numero Pedidos]
+FROM Orders AS o
+INNER JOIN Employees AS e
+ON o.EmployeeID = e.EmployeeID
+GROUP BY CONCAT(e.FirstName, ' ', e.LastName), DATEPART(year, o.OrderDate)
+ORDER BY [Año], [Numero Pedidos] DESC;
+
 
