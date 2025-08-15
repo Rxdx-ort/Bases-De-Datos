@@ -1,4 +1,4 @@
-﻿/*
+/*
 ===BASE DE DATOS BDG2===
 Realizar una base de datos con dos tablas para ejemplificar el uso de SQL server
 */
@@ -67,3 +67,8 @@ VALUES ('Don julio', 456,43.2,3,2),
 
  SELECT*
 FROM�producto;
+
+
+
+
+

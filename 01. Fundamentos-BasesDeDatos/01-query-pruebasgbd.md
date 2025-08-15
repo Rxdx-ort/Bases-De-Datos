@@ -38,3 +38,4 @@ FROM categoria;
 SELECT categorianombre
 FROM categoria
 WHERE categorianombre= 'Vinos y licores';
+
